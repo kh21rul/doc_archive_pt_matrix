@@ -40,7 +40,12 @@ new #[Title('Login')] class extends Component {
             // Flash success message
             session()->flash('success', 'Login berhasil!');
 
-            return redirect()->intended('/dashboard');
+            // jika user admin, redirect ke halaman dashboard
+            if (Auth::user()->isAdmin()) {
+                $this->redirect('/dashboard', navigate: true);
+            } else {
+                $this->redirect('/', navigate: true);
+            }
         }
 
         $this->addError('email', 'Email atau password yang Anda masukkan salah.');
@@ -100,7 +105,7 @@ new #[Title('Login')] class extends Component {
                             <input type="checkbox" id="remember" class="custom-checkbox" wire:model="remember">
                             <label for="remember" class="remember-label">Ingat saya</label>
                         </div>
-                        <a href="#" class="forgot-link">Lupa password?</a>
+                        {{-- <a href="#" class="forgot-link">Lupa password?</a> --}}
                     </div>
 
                     <!-- Submit Button -->

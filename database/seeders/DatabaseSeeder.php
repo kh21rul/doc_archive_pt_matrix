@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
-            'role' => 'admin',
+            'role' => 'superadmin',
         ]);
 
         Division::insert([

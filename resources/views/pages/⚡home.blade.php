@@ -92,24 +92,31 @@ new #[Title('Home')] class extends Component {
                                     <small class="text-muted d-block">{{ Auth::user()->email }}</small>
                                 </div>
                             </li>
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
-                            <li>
-                                <a class="dropdown-item" wire:navigate href="{{ route('dashboard') }}">
-                                    <i class="fas fa-tachometer-alt"></i> Dashboard
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" wire:navigate href="{{ route('dashboard.documents') }}">
-                                    <i class="fas fa-file-alt"></i> Kelola Dokumen
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" wire:navigate href="{{ route('dashboard.divisions') }}">
-                                    <i class="fas fa-building"></i> Divisi
-                                </a>
-                            </li>
+                            @if (Auth::user()->isAdmin())
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" wire:navigate href="{{ route('dashboard') }}">
+                                        <i class="fas fa-tachometer-alt"></i> Dashboard
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" wire:navigate href="{{ route('dashboard.documents') }}">
+                                        <i class="fas fa-file-alt"></i> Kelola Dokumen
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" wire:navigate href="{{ route('dashboard.divisions') }}">
+                                        <i class="fas fa-building"></i> Divisi
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" wire:navigate href="{{ route('dashboard.users') }}">
+                                        <i class="fas fa-users"></i> Kelola User
+                                    </a>
+                                </li>
+                            @endif
                             <li>
                                 <hr class="dropdown-divider">
                             </li>

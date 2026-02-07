@@ -45,6 +45,11 @@
                     <i class="fas fa-building"></i>
                     <span>Divisi</span>
                 </a>
+                <a wire:navigate href="{{ route('dashboard.users') }}"
+                    class="nav-item {{ request()->is('dashboard/users') ? 'active' : '' }}">
+                    <i class="fas fa-users"></i>
+                    <span>Kelola User</span>
+                </a>
                 {{-- <a href="#" class="nav-item">
                     <i class="fas fa-upload"></i>
                     <span>Upload Dokumen</span>
@@ -65,6 +70,12 @@
                         <p class="user-email">{{ Auth::user()->email }}</p>
                     </div>
                 </div>
+
+                <a type="button" class="btn-view-website mb-2" href="{{ route('home') }}" target="_blank">
+                    <i class="fas fa-globe"></i>
+                    <span>Lihat Web</span>
+                </a>
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="btn-logout">
@@ -341,6 +352,28 @@
         .btn-logout:hover {
             background: #e74c3c;
             border-color: #e74c3c;
+        }
+
+        .btn-view-website {
+            width: 100%;
+            padding: 12px;
+            background: rgba(194, 162, 93, 0.2);
+            color: white;
+            border: 1px solid rgba(194, 162, 93, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-view-website:hover {
+            background: #c2a25d;
+            border-color: #c2a25d;
         }
 
         /* Main Content */
