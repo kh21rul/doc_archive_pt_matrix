@@ -15,6 +15,10 @@ body{
     font-family: Arial, Helvetica, sans-serif;
 }
 
+#nprogress .bar {
+    background: #c2a25d !important;
+}
+
 .navbar{
     background:#fff;
     border-bottom:1px solid #ddd;

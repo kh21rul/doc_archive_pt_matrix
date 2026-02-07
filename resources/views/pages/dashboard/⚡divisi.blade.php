@@ -7,7 +7,7 @@ use Livewire\WithPagination;
 use Livewire\Attributes\Validate;
 use App\Models\Division;
 
-new #[Layout('layouts::dashboard')] class extends Component {
+new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends Component {
     use WithPagination;
 
     public $search = '';

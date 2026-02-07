@@ -3,8 +3,9 @@
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Illuminate\Support\Facades\Auth;
+use Livewire\Attributes\Title;
 
-new class extends Component {
+new #[Title('Login')] class extends Component {
     #[
         Validate(
             'required|email',

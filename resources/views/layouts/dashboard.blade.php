@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title ?? 'Document Archive' }}</title>
+    <title>{{ $title ? $title . ' - Dashboard Maxis Library' : config('app.name') }}</title>
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -30,16 +30,17 @@
             </div>
 
             <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
+                <a wire:navigate href="{{ route('dashboard') }}"
+                    class="nav-item {{ request()->is('dashboard') ? 'active' : '' }}">
                     <i class="fas fa-home"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/dashboard/documents"
+                <a wire:navigate href="{{ route('dashboard.documents') }}"
                     class="nav-item {{ request()->is('dashboard/documents') ? 'active' : '' }}">
                     <i class="fas fa-folder-open"></i>
                     <span>Semua Dokumen</span>
                 </a>
-                <a href="/dashboard/divisions"
+                <a wire:navigate href="{{ route('dashboard.divisions') }}"
                     class="nav-item {{ request()->is('dashboard/divisions') ? 'active' : '' }}">
                     <i class="fas fa-building"></i>
                     <span>Divisi</span>
@@ -81,7 +82,7 @@
                 <button class="sidebar-toggle mobile-toggle" id="mobileToggle">
                     <i class="fas fa-bars"></i>
                 </button>
-                <div class="navbar-search">
+                {{-- <div class="navbar-search">
                     <i class="fas fa-search"></i>
                     <input type="text" placeholder="Cari dokumen...">
                 </div>
@@ -93,6 +94,9 @@
                     <button class="navbar-btn">
                         <i class="fas fa-cog"></i>
                     </button>
+                </div> --}}
+                <div>
+                    <span class="page-title">Library Management System - PT. Maxis</span>
                 </div>
             </nav>
 
@@ -144,6 +148,13 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f6f6f6;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
         }
 
         .dashboard-wrapper {

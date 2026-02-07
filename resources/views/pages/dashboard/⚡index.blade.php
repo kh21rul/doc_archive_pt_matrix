@@ -8,7 +8,7 @@ use App\Models\Document;
 use App\Models\Division;
 use Illuminate\Support\Facades\Auth;
 
-new #[Layout('layouts::dashboard')] class extends Component {
+new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Component {
     use WithPagination;
 
     public $totalDocuments = 0;
@@ -72,11 +72,6 @@ new #[Layout('layouts::dashboard')] class extends Component {
             <h1 class="page-title">Dashboard</h1>
             <p class="page-subtitle">Selamat datang kembali, {{ Auth::user()->name ?? 'User' }}!</p>
         </div>
-        <div class="header-actions">
-            <button class="btn-primary-dash">
-                <i class="fas fa-plus"></i> Tambah Dokumen
-            </button>
-        </div>
     </div>
 
     <!-- Stats Cards -->
@@ -88,9 +83,9 @@ new #[Layout('layouts::dashboard')] class extends Component {
             <div class="stat-content">
                 <p class="stat-label-dash">Total Dokumen</p>
                 <h3 class="stat-value-dash">{{ $totalDocuments }}</h3>
-                <span class="stat-change positive">
+                {{-- <span class="stat-change positive">
                     <i class="fas fa-arrow-up"></i> 12% dari bulan lalu
-                </span>
+                </span> --}}
             </div>
         </div>
 
@@ -101,9 +96,9 @@ new #[Layout('layouts::dashboard')] class extends Component {
             <div class="stat-content">
                 <p class="stat-label-dash">Total Divisi</p>
                 <h3 class="stat-value-dash">{{ $totalDivisions }}</h3>
-                <span class="stat-change positive">
+                {{-- <span class="stat-change positive">
                     <i class="fas fa-arrow-up"></i> 2 divisi baru
-                </span>
+                </span> --}}
             </div>
         </div>
 
@@ -114,22 +109,9 @@ new #[Layout('layouts::dashboard')] class extends Component {
             <div class="stat-content">
                 <p class="stat-label-dash">Upload Hari Ini</p>
                 <h3 class="stat-value-dash">{{ $recentUploads }}</h3>
-                <span class="stat-change neutral">
+                {{-- <span class="stat-change neutral">
                     <i class="fas fa-minus"></i> Sama seperti kemarin
-                </span>
-            </div>
-        </div>
-
-        <div class="stat-card-dash stat-info-dash">
-            <div class="stat-icon-dash">
-                <i class="fas fa-eye"></i>
-            </div>
-            <div class="stat-content">
-                <p class="stat-label-dash">Total Views</p>
-                <h3 class="stat-value-dash">1,234</h3>
-                <span class="stat-change positive">
-                    <i class="fas fa-arrow-up"></i> 8% meningkat
-                </span>
+                </span> --}}
             </div>
         </div>
     </div>

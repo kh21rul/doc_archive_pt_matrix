@@ -11,7 +11,7 @@ use App\Models\Division;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-new #[Layout('layouts::dashboard')] class extends Component {
+new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends Component {
     use WithPagination, WithFileUploads;
 
     public $search = '';
