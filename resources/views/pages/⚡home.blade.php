@@ -6,6 +6,7 @@ use Livewire\WithPagination;
 use App\Models\Division;
 use App\Models\Document;
 use Livewire\Attributes\Title;
+use Illuminate\Support\Facades\Storage;
 
 new #[Title('Home')] class extends Component {
     use WithPagination;
@@ -56,6 +57,20 @@ new #[Title('Home')] class extends Component {
         }
 
         return $query->latest()->paginate(6);
+    }
+
+    public function downloadDocument($id)
+    {
+        $document = Document::findOrFail($id);
+        return Storage::disk('public')->download($document->file_path, $document->title);
+    }
+
+    public function logout()
+    {
+        auth()->logout();
+        request()->session()->invalidate();
+        request()->session()->regenerateToken();
+        $this->redirect('/', navigate: true);
     }
 };
 ?>
@@ -121,12 +136,15 @@ new #[Title('Home')] class extends Component {
                                 <hr class="dropdown-divider">
                             </li>
                             <li>
-                                <form method="POST" action="{{ route('logout') }}">
+                                {{-- <form method="POST" action="{{ route('logout') }}">
                                     @csrf
                                     <button type="submit" class="dropdown-item text-danger">
                                         <i class="fas fa-sign-out-alt"></i> Logout
                                     </button>
-                                </form>
+                                </form> --}}
+                                <button type="button" wire:click="logout" class="dropdown-item text-danger">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </button>
                             </li>
                         </ul>
                     </div>
@@ -191,10 +209,10 @@ new #[Title('Home')] class extends Component {
                             </small>
                         </div>
 
-                        <a href="{{ asset('storage/' . $document->file_path) }}" class="btn-download" target="_blank"
-                            download title="Download">
+                        <button wire:click="downloadDocument({{ $document->id }})" class="btn-download" target="_blank"
+                            title="Download">
                             <i class="fas fa-download"></i> Download
-                        </a>
+                        </button>
                     </div>
                 @empty
                     <div class="text-center alert alert-custom">

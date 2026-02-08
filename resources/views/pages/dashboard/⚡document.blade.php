@@ -27,7 +27,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
     #[Validate('required|exists:divisions,id')]
     public $division_id = ''; // Max 10MB
 
-    #[Validate('nullable|file|mimes:pdf|max:10240')]
+    #[Validate('nullable|file|mimes:pdf,xls,xlsx,doc,docx|max:10240')]
     public $file;
 
     public $currentFile = null;
@@ -83,19 +83,44 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
     {
         // Validation rules berbeda untuk create dan edit
         if ($this->isEdit) {
-            $this->validate([
-                'title' => 'required|min:3',
-                'description' => 'nullable|max:1000',
-                'division_id' => 'required|exists:divisions,id',
-                'file' => 'nullable|file|mimes:pdf|max:10240',
-            ]);
+            $this->validate(
+                [
+                    'title' => 'required|min:3',
+                    'description' => 'nullable|max:1000',
+                    'division_id' => 'required|exists:divisions,id',
+                    'file' => 'nullable|file|mimes:pdf,xls,xlsx,doc,docx|max:10240',
+                ],
+                [
+                    'title.required' => 'Judul wajib diisi.',
+                    'title.min' => 'Judul minimal 3 karakter.',
+                    'description.max' => 'Deskripsi maksimal 1000 karakter.',
+                    'division_id.required' => 'Divisi wajib dipilih.',
+                    'division_id.exists' => 'Divisi yang dipilih tidak valid.',
+                    'file.file' => 'File yang diunggah tidak valid.',
+                    'file.mimes' => 'Format file harus PDF, Excel (xls/xlsx), atau Word (doc/docx).',
+                    'file.max' => 'Ukuran file maksimal 10MB.',
+                ],
+            );
         } else {
-            $this->validate([
-                'title' => 'required|min:3',
-                'description' => 'nullable|max:1000',
-                'division_id' => 'required|exists:divisions,id',
-                'file' => 'required|file|mimes:pdf|max:10240',
-            ]);
+            $this->validate(
+                [
+                    'title' => 'required|min:3',
+                    'description' => 'nullable|max:1000',
+                    'division_id' => 'required|exists:divisions,id',
+                    'file' => 'required|file|mimes:pdf,xls,xlsx,doc,docx|max:10240',
+                ],
+                [
+                    'title.required' => 'Judul wajib diisi.',
+                    'title.min' => 'Judul minimal 3 karakter.',
+                    'description.max' => 'Deskripsi maksimal 1000 karakter.',
+                    'division_id.required' => 'Divisi wajib dipilih.',
+                    'division_id.exists' => 'Divisi yang dipilih tidak valid.',
+                    'file.required' => 'File wajib diunggah.',
+                    'file.file' => 'File yang diunggah tidak valid.',
+                    'file.mimes' => 'Format file harus PDF, Excel (xls/xlsx), atau Word (doc/docx).',
+                    'file.max' => 'Ukuran file maksimal 10MB.',
+                ],
+            );
         }
 
         if ($this->isEdit) {
@@ -170,7 +195,8 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
     public function downloadDocument($id)
     {
         $document = Document::findOrFail($id);
-        return Storage::disk('public')->download($document->file_path, $document->title . '.pdf');
+        // donwload formar asli file
+        return Storage::disk('public')->download($document->file_path, $document->title);
     }
 };
 ?>
@@ -389,7 +415,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
 
                                 <div class="file-upload-wrapper">
                                     <input type="file" class="form-control @error('file') is-invalid @enderror"
-                                        id="file" wire:model="file" accept=".pdf">
+                                        id="file" wire:model="file" accept=".pdf,.xls,.xlsx,.doc,.docx">
                                     @error('file')
                                         <div class="invalid-feedback">
                                             <i class="fas fa-exclamation-circle"></i> {{ $message }}
@@ -409,7 +435,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
 
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle"></i>
-                                    Format: PDF | Maksimal: 10MB
+                                    Format: PDF, Excel (xls/xlsx), atau Word (doc/docx) | Maksimal: 10MB
                                     @if ($isEdit)
                                         | Kosongkan jika tidak ingin mengubah file
                                     @endif
