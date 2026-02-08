@@ -6,6 +6,7 @@ use Livewire\Attributes\Title;
 use Livewire\WithPagination;
 use App\Models\Document;
 use App\Models\Division;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Component {
@@ -13,6 +14,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
 
     public $totalDocuments = 0;
     public $totalDivisions = 0;
+    public $totalUsers = 0;
     public $recentUploads = 0;
     public $search = '';
     public $selectedDivision = null;
@@ -22,6 +24,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
     {
         $this->totalDocuments = Document::count();
         $this->totalDivisions = Division::count();
+        $this->totalUsers = User::count();
         $this->recentUploads = Document::whereDate('created_at', today())->count();
     }
 
@@ -98,6 +101,19 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                 <h3 class="stat-value-dash">{{ $recentUploads }}</h3>
                 {{-- <span class="stat-change neutral">
                     <i class="fas fa-minus"></i> Sama seperti kemarin
+                </span> --}}
+            </div>
+        </div>
+
+        <div class="stat-card-dash stat-info-dash">
+            <div class="stat-icon-dash">
+                <i class="fas fa-users"></i>
+            </div>
+            <div class="stat-content">
+                <p class="stat-label-dash">Total Pengguna</p>
+                <h3 class="stat-value-dash">{{ $totalUsers }}</h3>
+                {{-- <span class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> 1 pengguna baru
                 </span> --}}
             </div>
         </div>
