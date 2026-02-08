@@ -73,12 +73,24 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
     {
         if ($this->isEdit) {
             // Validation untuk edit
-            $this->validate([
-                'name' => 'required|min:3',
-                'email' => 'required|email|unique:users,email,' . $this->userId,
-                'role' => 'required|in:admin,viewer',
-                'new_password' => 'nullable|min:6',
-            ]);
+            $this->validate(
+                [
+                    'name' => 'required|min:3',
+                    'email' => 'required|email|unique:users,email,' . $this->userId,
+                    'role' => 'required|in:admin,viewer',
+                    'new_password' => 'nullable|min:6',
+                ],
+                [
+                    'name.required' => 'Nama wajib diisi.',
+                    'name.min' => 'Nama minimal 3 karakter.',
+                    'email.required' => 'Email wajib diisi.',
+                    'email.email' => 'Format email tidak valid.',
+                    'email.unique' => 'Email sudah digunakan.',
+                    'role.required' => 'Role wajib dipilih.',
+                    'role.in' => 'Role yang dipilih tidak valid.',
+                    'new_password.min' => 'Password minimal 6 karakter.',
+                ],
+            );
 
             $user = User::findOrFail($this->userId);
 
@@ -107,12 +119,25 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
             $message = 'User berhasil diperbarui!';
         } else {
             // Validation untuk create
-            $this->validate([
-                'name' => 'required|min:3',
-                'email' => 'required|email|unique:users,email',
-                'password' => 'required|min:6',
-                'role' => 'required|in:admin,viewer',
-            ]);
+            $this->validate(
+                [
+                    'name' => 'required|min:3',
+                    'email' => 'required|email|unique:users,email',
+                    'password' => 'required|min:6',
+                    'role' => 'required|in:admin,viewer',
+                ],
+                [
+                    'name.required' => 'Nama wajib diisi.',
+                    'name.min' => 'Nama minimal 3 karakter.',
+                    'email.required' => 'Email wajib diisi.',
+                    'email.email' => 'Format email tidak valid.',
+                    'email.unique' => 'Email sudah digunakan.',
+                    'password.required' => 'Password wajib diisi.',
+                    'password.min' => 'Password minimal 6 karakter.',
+                    'role.required' => 'Role wajib dipilih.',
+                    'role.in' => 'Role yang dipilih tidak valid.',
+                ],
+            );
 
             User::create([
                 'name' => $this->name,

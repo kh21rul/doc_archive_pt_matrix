@@ -13,10 +13,3 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::livewire('/dashboard/users', 'pages::dashboard.⚡user')->name('dashboard.users');
     Route::livewire('/dashboard/documentaccess', 'pages::dashboard.⚡document-access')->name('dashboard.documentaccess');
 });
-
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/');
-})->name('logout')->middleware('auth');

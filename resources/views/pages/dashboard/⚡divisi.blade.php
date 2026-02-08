@@ -4,21 +4,29 @@ use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use Livewire\Attributes\Validate;
 use App\Models\Division;
+use Illuminate\Support\Facades\Storage;
 
 new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends Component {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $divisionId = null;
 
-    #[Validate('required|min:3')]
+    #[Validate('required', message: 'Nama divisi wajib diisi.')]
+    #[Validate('min:3', message: 'Nama divisi minimal 3 karakter.')]
     public $name = '';
 
-    #[Validate('nullable|max:500')]
+    #[Validate('nullable')]
+    #[Validate('max:500', message: 'Deskripsi maksimal 500 karakter.')]
     public $description = '';
 
+    #[Validate('nullable|image|max:2048', message: 'Logo harus berupa gambar dan maksimal 2MB.')]
+    public $logo;
+
+    public $existingLogo = null;
     public $isEdit = false;
     protected $paginationTheme = 'bootstrap';
 
@@ -40,7 +48,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
 
     public function openCreateModal()
     {
-        $this->reset(['divisionId', 'name', 'description', 'isEdit']);
+        $this->reset(['divisionId', 'name', 'description', 'logo', 'existingLogo', 'isEdit']);
         $this->resetValidation();
         $this->dispatch('openModal');
     }
@@ -51,31 +59,67 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
         $this->divisionId = $division->id;
         $this->name = $division->name;
         $this->description = $division->description;
+        $this->existingLogo = $division->logo;
+        $this->logo = null;
         $this->isEdit = true;
         $this->resetValidation();
         $this->dispatch('openModal');
+    }
+
+    public function removeLogo()
+    {
+        $this->logo = null;
+        $this->dispatch('logo-removed');
+    }
+
+    public function removeExistingLogo()
+    {
+        if ($this->isEdit && $this->existingLogo) {
+            $division = Division::findOrFail($this->divisionId);
+            if ($division->logo && Storage::disk('public')->exists($division->logo)) {
+                Storage::disk('public')->delete($division->logo);
+            }
+            $division->update(['logo' => null]);
+            $this->existingLogo = null;
+            $this->dispatch('showAlert', ['message' => 'Logo berhasil dihapus!', 'type' => 'success']);
+        }
     }
 
     public function save()
     {
         $this->validate();
 
+        $logoPath = $this->existingLogo;
+
+        // Upload logo baru jika ada
+        if ($this->logo) {
+            // Hapus logo lama jika ada
+            if ($this->isEdit && $this->existingLogo && Storage::disk('public')->exists($this->existingLogo)) {
+                Storage::disk('public')->delete($this->existingLogo);
+            }
+
+            // Upload logo baru
+            $logoPath = $this->logo->store('divisions/logos', 'public');
+        }
+
         if ($this->isEdit) {
             $division = Division::findOrFail($this->divisionId);
             $division->update([
                 'name' => $this->name,
                 'description' => $this->description,
+                'logo' => $logoPath,
             ]);
             $message = 'Divisi berhasil diperbarui!';
         } else {
             Division::create([
                 'name' => $this->name,
                 'description' => $this->description,
+                'logo' => $logoPath,
             ]);
             $message = 'Divisi berhasil ditambahkan!';
         }
 
-        $this->reset(['divisionId', 'name', 'description', 'isEdit']);
+        $this->reset(['divisionId', 'name', 'description', 'logo', 'existingLogo', 'isEdit']);
         $this->dispatch('closeModal');
         $this->dispatch('showAlert', ['message' => $message, 'type' => 'success']);
     }
@@ -97,6 +141,11 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                 'type' => 'error',
             ]);
             return;
+        }
+
+        // Hapus logo jika ada
+        if ($division->logo && Storage::disk('public')->exists($division->logo)) {
+            Storage::disk('public')->delete($division->logo);
         }
 
         $division->delete();
@@ -142,9 +191,9 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                     <tr>
                         <th width="5%">#</th>
                         <th width="25%">Nama Divisi</th>
-                        <th width="40%">Deskripsi</th>
+                        <th width="35%">Deskripsi</th>
                         <th width="15%" class="text-center">Total Dokumen</th>
-                        <th width="15%" class="text-center">Aksi</th>
+                        <th width="20%" class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -154,7 +203,12 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                             <td>
                                 <div class="division-name-cell">
                                     <div class="division-icon">
-                                        <i class="fas fa-building"></i>
+                                        @if ($division->logo)
+                                            <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}"
+                                                class="division-logo-img">
+                                        @else
+                                            <i class="fas fa-building"></i>
+                                        @endif
                                     </div>
                                     <span class="fw-bold">{{ $division->name }}</span>
                                 </div>
@@ -249,9 +303,74 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                             @enderror
                         </div>
 
+                        <!-- Logo Upload Field -->
+                        <div class="mb-3">
+                            <label for="logo" class="form-label">
+                                <i class="fas fa-image text-primary"></i> Logo Divisi
+                            </label>
+
+                            <!-- Existing Logo Preview (saat edit) -->
+                            @if ($isEdit && $existingLogo && !$logo)
+                                <div class="existing-logo-preview mb-3">
+                                    <div class="logo-preview-container">
+                                        <img src="{{ Storage::url($existingLogo) }}" alt="Logo"
+                                            class="preview-image">
+                                        <button type="button" wire:click="removeExistingLogo" class="btn-remove-logo"
+                                            title="Hapus Logo">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-muted d-block mt-2">Logo saat ini</small>
+                                </div>
+                            @endif
+
+                            <!-- New Logo Preview -->
+                            @if ($logo)
+                                <div class="new-logo-preview mb-3">
+                                    <div class="logo-preview-container">
+                                        <img src="{{ $logo->temporaryUrl() }}" alt="Preview" class="preview-image">
+                                        <button type="button" wire:click="removeLogo" class="btn-remove-logo"
+                                            title="Hapus Logo">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <small class="text-success d-block mt-2">
+                                        <i class="fas fa-check-circle"></i> Logo baru dipilih
+                                    </small>
+                                </div>
+                            @endif
+
+                            <!-- Upload Button -->
+                            @if (!$logo)
+                                <div class="upload-area" wire:loading.remove wire:target="logo">
+                                    <input type="file" id="logo" wire:model="logo" accept="image/*"
+                                        class="d-none">
+                                    <label for="logo" class="upload-label">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <span>Klik untuk upload logo</span>
+                                        <small>PNG, JPG, JPEG (Max: 2MB)</small>
+                                    </label>
+                                </div>
+                            @endif
+
+                            <!-- Loading State -->
+                            <div wire:loading wire:target="logo" class="text-center py-3">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2 text-muted">Mengupload logo...</p>
+                            </div>
+
+                            @error('logo')
+                                <div class="text-danger mt-2">
+                                    <small><i class="fas fa-exclamation-circle"></i> {{ $message }}</small>
+                                </div>
+                            @enderror
+                        </div>
+
                         <div class="alert alert-info mb-0">
                             <i class="fas fa-info-circle"></i>
-                            <small>Pastikan nama divisi unik dan mudah diingat.</small>
+                            <small>Logo bersifat opsional. Jika tidak diupload, akan menggunakan ikon default.</small>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -259,11 +378,11 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                             <i class="fas fa-times"></i> Batal
                         </button>
                         <button type="submit" class="btn btn-primary-custom" wire:loading.attr="disabled">
-                            <span wire:loading.remove>
+                            <span wire:loading.remove wire:target="save">
                                 <i class="fas {{ $isEdit ? 'fa-save' : 'fa-plus' }}"></i>
                                 {{ $isEdit ? 'Update' : 'Simpan' }}
                             </span>
-                            <span wire:loading>
+                            <span wire:loading wire:target="save">
                                 <span class="spinner-border spinner-border-sm me-2"></span>
                                 Menyimpan...
                             </span>
@@ -424,6 +543,13 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
         color: white;
         font-size: 1.2rem;
         flex-shrink: 0;
+        overflow: hidden;
+    }
+
+    .division-logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
     }
 
     .text-muted-table {
@@ -577,6 +703,89 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
         font-size: 0.875rem;
     }
 
+    /* Logo Upload Styles */
+    .upload-area {
+        border: 2px dashed #e0e0e0;
+        border-radius: 12px;
+        padding: 30px;
+        text-align: center;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .upload-area:hover {
+        border-color: #c2a25d;
+        background: #fff;
+    }
+
+    .upload-label {
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        margin: 0;
+    }
+
+    .upload-label i {
+        font-size: 2.5rem;
+        color: #c2a25d;
+    }
+
+    .upload-label span {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .upload-label small {
+        color: #7f8c8d;
+        font-size: 0.85rem;
+    }
+
+    /* Logo Preview Styles */
+    .existing-logo-preview,
+    .new-logo-preview {
+        position: relative;
+    }
+
+    .logo-preview-container {
+        position: relative;
+        display: inline-block;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 2px solid #e0e0e0;
+    }
+
+    .preview-image {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .btn-remove-logo {
+        position: absolute;
+        top: 8px;
+        right: 8px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: rgba(244, 67, 54, 0.9);
+        color: white;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-remove-logo:hover {
+        background: #f44336;
+        transform: scale(1.1);
+    }
+
     .modal-footer {
         padding: 20px 25px;
         border-top: 1px solid #f0f0f0;
@@ -667,6 +876,11 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
             flex-direction: column;
             align-items: flex-start;
         }
+
+        .preview-image {
+            width: 120px;
+            height: 120px;
+        }
     }
 </style>
 
@@ -721,6 +935,19 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Divisi')] class extends C
                 if (result.isConfirmed) {
                     $wire.call('delete');
                 }
+            });
+        });
+
+        // Logo removed notification
+        $wire.on('logo-removed', () => {
+            Swal.fire({
+                icon: 'info',
+                title: 'Logo Dihapus',
+                text: 'Logo telah dihapus dari form',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2000
             });
         });
 

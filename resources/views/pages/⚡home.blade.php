@@ -247,7 +247,16 @@ new #[Title('Home')] class extends Component {
                     <div class="col-md-4">
                         <div class="help-card {{ $selectedDivision == $division->id ? 'active' : '' }}"
                             wire:click="toggleDivision({{ $division->id }})" style="cursor: pointer;">
-                            <div class="help-icon"><img src="{{ asset('asset/images/1.png') }}" alt="1"></div>
+                            @if ($division->logo)
+                                <div class="help-icon">
+                                    <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}"
+                                        class="division-logo-img">
+                                </div>
+                            @else
+                                <div class="division-icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                            @endif
                             <div>
                                 <h5>{{ $division->name }}</h5>
                                 <p>{{ $division->description }}</p>
@@ -843,6 +852,26 @@ new #[Title('Home')] class extends Component {
     /* SweetAlert Customization */
     .swal2-confirm {
         background: linear-gradient(135deg, #c2a25d, #a88a4d) !important;
+    }
+
+    .division-logo-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .division-icon {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #c2a25d, #a88a4d);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+        overflow: hidden;
     }
 
     /* Responsive */
