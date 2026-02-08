@@ -77,7 +77,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                 [
                     'name' => 'required|min:3',
                     'email' => 'required|email|unique:users,email,' . $this->userId,
-                    'role' => 'required|in:admin,viewer',
+                    'role' => 'required|in:superadmin,admin,viewer',
                     'new_password' => 'nullable|min:6',
                 ],
                 [
@@ -124,7 +124,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                     'name' => 'required|min:3',
                     'email' => 'required|email|unique:users,email',
                     'password' => 'required|min:6',
-                    'role' => 'required|in:admin,viewer',
+                    'role' => 'required|in:superadmin,admin,viewer',
                 ],
                 [
                     'name.required' => 'Nama wajib diisi.',
