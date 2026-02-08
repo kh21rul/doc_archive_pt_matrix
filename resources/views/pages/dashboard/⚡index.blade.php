@@ -49,19 +49,6 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
 
         return $query->latest()->paginate(10);
     }
-
-    public function deleteDocument($id)
-    {
-        $document = Document::find($id);
-        if ($document) {
-            // Delete file from storage
-            if (file_exists(storage_path('app/public/' . $document->file_path))) {
-                unlink(storage_path('app/public/' . $document->file_path));
-            }
-            $document->delete();
-            session()->flash('success', 'Dokumen berhasil dihapus!');
-        }
-    }
 };
 ?>
 
@@ -196,11 +183,6 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                                         class="btn-action-table btn-download" download title="Download">
                                         <i class="fas fa-download"></i>
                                     </a>
-                                    <button wire:click="deleteDocument({{ $document->id }})"
-                                        wire:confirm="Apakah Anda yakin ingin menghapus dokumen ini?"
-                                        class="btn-action-table btn-delete" title="Hapus">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
                                 </div>
                             </td>
                         </tr>

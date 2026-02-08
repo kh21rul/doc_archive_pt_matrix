@@ -255,7 +255,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                                     </button>
                                     <button wire:click="confirmDelete({{ $user->id }})"
                                         class="btn-action-table btn-delete" title="Hapus"
-                                        @if ($user->id === auth()->id()) disabled @endif>
+                                        @if ($user->id === auth()->id() || $user->role === 'superadmin') disabled @endif>
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </div>
@@ -336,9 +336,13 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                                 <span class="text-danger">*</span>
                             </label>
                             <select class="form-select @error('role') is-invalid @enderror" id="role"
-                                wire:model="role">
+                                wire:model="role" @disabled($isEdit && $role === 'superadmin')>
                                 <option value="viewer">Viewer</option>
                                 <option value="admin">Admin</option>
+
+                                @if ($isEdit && $role === 'superadmin')
+                                    <option value="superadmin">Superadmin</option>
+                                @endif
                             </select>
                             @error('role')
                                 <div class="invalid-feedback">
