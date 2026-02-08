@@ -249,8 +249,7 @@ new #[Title('Home')] class extends Component {
                             wire:click="toggleDivision({{ $division->id }})" style="cursor: pointer;">
                             @if ($division->logo)
                                 <div class="help-icon">
-                                    <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}"
-                                        class="division-logo-img">
+                                    <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}">
                                 </div>
                             @else
                                 <div class="division-icon">
@@ -852,12 +851,6 @@ new #[Title('Home')] class extends Component {
     /* SweetAlert Customization */
     .swal2-confirm {
         background: linear-gradient(135deg, #c2a25d, #a88a4d) !important;
-    }
-
-    .division-logo-img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
     }
 
     .division-icon {
