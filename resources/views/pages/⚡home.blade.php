@@ -133,9 +133,11 @@ new #[Title('Home')] class extends Component {
                 return;
             }
 
-            if ($comment->user_id != Auth::id() || Auth::user()->role != 'superadmin') {
-                $this->dispatch('comment-unauthorized');
-                return;
+            if (Auth::user()->role !== 'superadmin') {
+                if ($comment->user_id != Auth::id()) {
+                    $this->dispatch('comment-unauthorized');
+                    return;
+                }
             }
 
             $comment->delete();
