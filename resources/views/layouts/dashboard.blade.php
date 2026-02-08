@@ -16,15 +16,15 @@
 </head>
 
 <body>
-    <div class="dashboard-wrapper">
+    <div class="dashboard-wrapper" x-data="{ collapsed: false }">
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar" id="sidebar" :class="{ 'collapsed': collapsed }">
             <div class="sidebar-header">
                 <div class="logo-container">
                     <i class="fas fa-book-open"></i>
                     <span class="logo-text">Doc Archive</span>
                 </div>
-                <button class="sidebar-toggle" id="sidebarToggle">
+                <button class="sidebar-toggle" @click="collapsed = !collapsed">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -49,6 +49,11 @@
                     class="nav-item {{ request()->is('dashboard/users') ? 'active' : '' }}">
                     <i class="fas fa-users"></i>
                     <span>Kelola User</span>
+                </a>
+                <a wire:navigate href="{{ route('dashboard.documentaccess') }}"
+                    class="nav-item {{ request()->is('dashboard/documentaccess') ? 'active' : '' }}">
+                    <i class="fas fa-lock"></i>
+                    <span>Kelola Akses Dokumen</span>
                 </a>
                 {{-- <a href="#" class="nav-item">
                     <i class="fas fa-upload"></i>
@@ -87,10 +92,10 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="main-content" id="mainContent">
+        <div class="main-content" :class="{ 'expanded': collapsed }">
             <!-- Navbar -->
             <nav class="navbar-dashboard">
-                <button class="sidebar-toggle mobile-toggle" id="mobileToggle">
+                <button class="sidebar-toggle mobile-toggle" @click="collapsed = !collapsed">
                     <i class="fas fa-bars"></i>
                 </button>
                 {{-- <div class="navbar-search">
@@ -118,36 +123,7 @@
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
     @livewireScripts
-
-    <script>
-        // Sidebar Toggle
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const mobileToggle = document.getElementById('mobileToggle');
-
-        function toggleSidebar() {
-            sidebar.classList.toggle('collapsed');
-            mainContent.classList.toggle('expanded');
-        }
-
-        sidebarToggle?.addEventListener('click', toggleSidebar);
-        mobileToggle?.addEventListener('click', toggleSidebar);
-
-        // Close sidebar when clicking outside on mobile
-        document.addEventListener('click', function(event) {
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(event.target) && !mobileToggle.contains(event.target)) {
-                    sidebar.classList.add('collapsed');
-                    mainContent.classList.add('expanded');
-                }
-            }
-        });
-    </script>
 
     <style>
         * {

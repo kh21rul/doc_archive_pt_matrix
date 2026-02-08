@@ -16,4 +16,11 @@ class Division extends Model
     {
         return $this->hasMany(Document::class);
     }
+
+    // Relationship dengan users (many-to-many)
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'division_user')
+            ->withTimestamps();
+    }
 }

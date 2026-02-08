@@ -11,6 +11,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::livewire('/dashboard/divisions', 'pages::dashboard.⚡divisi')->name('dashboard.divisions');
     Route::livewire('/dashboard/documents', 'pages::dashboard.⚡document')->name('dashboard.documents');
     Route::livewire('/dashboard/users', 'pages::dashboard.⚡user')->name('dashboard.users');
+    Route::livewire('/dashboard/documentaccess', 'pages::dashboard.⚡document-access')->name('dashboard.documentaccess');
 });
 
 Route::post('/logout', function () {

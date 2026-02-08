@@ -18,7 +18,11 @@ new #[Title('Home')] class extends Component {
 
     public function mount()
     {
-        $this->divisions = Division::all();
+        if (Auth::user()->isAdmin()) {
+            $this->divisions = Division::all();
+        } else {
+            $this->divisions = Auth::user()->divisions;
+        }
     }
 
     public function updatedSearch()
@@ -44,7 +48,7 @@ new #[Title('Home')] class extends Component {
     #[Computed]
     public function documents()
     {
-        $query = Document::query();
+        $query = Auth::user()->getAccessibleDocuments()->with('division');
 
         // Filter berdasarkan pencarian judul
         if ($this->search) {
@@ -124,11 +128,6 @@ new #[Title('Home')] class extends Component {
                                 <li>
                                     <a class="dropdown-item" wire:navigate href="{{ route('dashboard.divisions') }}">
                                         <i class="fas fa-building"></i> Divisi
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" wire:navigate href="{{ route('dashboard.users') }}">
-                                        <i class="fas fa-users"></i> Kelola User
                                     </a>
                                 </li>
                             @endif

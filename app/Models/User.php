@@ -63,4 +63,47 @@ class User extends Authenticatable
     {
         return $this->hasMany(Document::class);
     }
+
+    // Relationship dengan divisions (many-to-many)
+    public function divisions()
+    {
+        return $this->belongsToMany(Division::class, 'division_user')
+            ->withTimestamps();
+    }
+
+    // Check if user has access to a specific division
+    public function hasAccessToDivision($divisionId)
+    {
+        // Admin has access to all divisions
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return $this->divisions()->where('division_id', $divisionId)->exists();
+    }
+
+    // Check if user has access to a document
+    public function hasAccessToDocument(Document $document)
+    {
+        // Admin has access to all documents
+        if ($this->isAdmin()) {
+            return true;
+        }
+
+        return $this->hasAccessToDivision($document->division_id);
+    }
+
+    // Get accessible documents
+    public function getAccessibleDocuments()
+    {
+        // Admin can access all documents
+        if ($this->isAdmin()) {
+            return Document::query();
+        }
+
+        // Viewer can only access documents from their allowed divisions
+        $divisionIds = $this->divisions()->pluck('divisions.id');
+
+        return Document::whereIn('division_id', $divisionIds);
+    }
 }
