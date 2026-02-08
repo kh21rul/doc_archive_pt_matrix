@@ -168,7 +168,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                             <td>
                                 <div class="document-title-cell">
                                     <div class="doc-icon">
-                                        <i class="fas fa-file-pdf"></i>
+                                        <i class="fas fa-file"></i>
                                     </div>
                                     <span>{{ $document->title }}</span>
                                 </div>
@@ -191,10 +191,10 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard')] class extends Componen
                             </td>
                             <td>
                                 <div class="action-buttons">
-                                    <a href="{{ asset('storage/' . $document->file_path) }}"
+                                    {{-- <a href="{{ asset('storage/' . $document->file_path) }}"
                                         class="btn-action-table btn-view" target="_blank" title="Lihat">
                                         <i class="fas fa-eye"></i>
-                                    </a>
+                                    </a> --}}
                                     <a href="{{ asset('storage/' . $document->file_path) }}"
                                         class="btn-action-table btn-download" download title="Download">
                                         <i class="fas fa-download"></i>

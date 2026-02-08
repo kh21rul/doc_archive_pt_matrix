@@ -257,7 +257,7 @@ new #[Layout('layouts::dashboard')] #[Title('Dashboard Dokumen')] class extends 
                             <td>
                                 <div class="document-title-cell">
                                     <div class="doc-icon">
-                                        <i class="fas fa-file-pdf"></i>
+                                        <i class="fas fa-file"></i>
                                     </div>
                                     <span class="fw-bold">{{ $document->title }}</span>
                                 </div>
