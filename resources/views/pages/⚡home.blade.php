@@ -243,33 +243,39 @@ new #[Title('Home')] class extends Component {
     </section>
 
     @auth
-        <section class="container help-wrapper mb-1">
-            <div class="row g-4">
-                @foreach ($divisions as $division)
-                    <div class="col-md-4">
-                        <div class="help-card {{ $selectedDivision == $division->id ? 'active' : '' }}"
-                            wire:click="toggleDivision({{ $division->id }})" style="cursor: pointer;">
+        <section class="container mt-5">
+            <div class="divisions-tabs-wrapper">
+                <h5 class="tabs-title">
+                    <i class="fas fa-folder-tree"></i> Kategori Dokumen
+                </h5>
+                <div class="divisions-tabs">
+                    <button class="tab-item {{ $selectedDivision == null ? 'active' : '' }}"
+                        wire:click="toggleDivision(null)">
+                        <i class="fas fa-grip-horizontal"></i>
+                        <span class="tab-label">Semua</span>
+                        <span class="tab-count">
+                            {{ $this->documents->total() }}
+                        </span>
+                    </button>
+                    @foreach ($divisions as $division)
+                        <button class="tab-item {{ $selectedDivision == $division->id ? 'active' : '' }}"
+                            wire:click="toggleDivision({{ $division->id }})">
                             @if ($division->logo)
-                                <div class="help-icon">
-                                    <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}">
-                                </div>
+                                <img src="{{ Storage::url($division->logo) }}" alt="{{ $division->name }}"
+                                    class="tab-icon-img">
                             @else
-                                <div class="division-icon">
-                                    <i class="fas fa-building"></i>
-                                </div>
+                                <i class="fas fa-building"></i>
                             @endif
-                            <div>
-                                <h5>{{ $division->name }}</h5>
-                                <p>{{ $division->description }}</p>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
+                            <span class="tab-label">{{ $division->name }}</span>
+                            <span class="tab-count">{{ $division->documents->count() }}</span>
+                        </button>
+                    @endforeach
+                </div>
             </div>
         </section>
 
-        <section class="container help-wrapper mb-1 py-4">
-            <div class="hero-search mb-4">
+        <section class="container">
+            <div class="hero-search mb-3">
                 <div class="row g-2">
                     <div>
                         <input type="text" class="form-control" placeholder="Search Document..."
@@ -400,7 +406,6 @@ new #[Title('Home')] class extends Component {
             <p class="mb-0">&copy; {{ date('Y') }} Document Archive. All rights reserved.</p>
         </div>
     </footer>
-    {{-- <a href="#" class="chat-btn">💬 Chat</a> --}}
 </div>
 
 @script
@@ -867,6 +872,143 @@ new #[Title('Home')] class extends Component {
         font-size: 1.2rem;
         flex-shrink: 0;
         overflow: hidden;
+    }
+
+    .divisions-tabs-wrapper {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+
+    .tabs-title {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        padding: 20px 25px;
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-bottom: 2px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .tabs-title i {
+        color: #c2a25d;
+    }
+
+    .divisions-tabs {
+        display: flex;
+        padding: 10px;
+        gap: 8px;
+        overflow-x: auto;
+        scroll-behavior: smooth;
+    }
+
+    .divisions-tabs::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .divisions-tabs::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .divisions-tabs::-webkit-scrollbar-thumb {
+        background: #c2a25d;
+        border-radius: 10px;
+    }
+
+    .tab-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 15px 20px;
+        background: #f8f9fa;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+        min-width: 110px;
+        flex-shrink: 0;
+    }
+
+    .tab-item i {
+        font-size: 1.5rem;
+        color: #c2a25d;
+        transition: all 0.3s ease;
+    }
+
+    .tab-icon-img {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .tab-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #555;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .tab-count {
+        background: #e0e0e0;
+        color: #666;
+        padding: 2px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+
+    .tab-item:hover {
+        background: white;
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(194, 162, 93, 0.2);
+    }
+
+    .tab-item.active {
+        background: linear-gradient(135deg, #c2a25d, #a88a4d);
+        box-shadow: 0 4px 12px rgba(194, 162, 93, 0.3);
+    }
+
+    .tab-item.active i,
+    .tab-item.active .tab-label {
+        color: white;
+    }
+
+    .tab-item.active .tab-count {
+        background: rgba(255, 255, 255, 0.3);
+        color: white;
+    }
+
+    .tab-item.active::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #c2a25d;
+    }
+
+    @media (max-width: 768px) {
+        .tab-item {
+            min-width: 90px;
+            padding: 12px 15px;
+        }
+
+        .tab-item i {
+            font-size: 1.2rem;
+        }
     }
 
     /* Responsive */
