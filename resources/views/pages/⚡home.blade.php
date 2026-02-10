@@ -15,6 +15,7 @@ new #[Title('Home')] class extends Component {
     public $divisions;
     public $search = '';
     public $selectedDivision = null;
+    public $totalDocuments = 0;
     protected $paginationTheme = 'bootstrap';
 
     // Properties untuk modal komentar
@@ -28,8 +29,10 @@ new #[Title('Home')] class extends Component {
         if (Auth::check()) {
             if (Auth::user()->isAdmin()) {
                 $this->divisions = Division::all();
+                $this->totalDocuments = Document::count();
             } else {
                 $this->divisions = Auth::user()->divisions;
+                $this->totalDocuments = Auth::user()->getAccessibleDocuments()->count();
             }
         }
     }
@@ -254,7 +257,7 @@ new #[Title('Home')] class extends Component {
                         <i class="fas fa-grip-horizontal"></i>
                         <span class="tab-label">Semua</span>
                         <span class="tab-count">
-                            {{ $this->documents->total() }}
+                            {{ $totalDocuments }}
                         </span>
                     </button>
                     @foreach ($divisions as $division)
