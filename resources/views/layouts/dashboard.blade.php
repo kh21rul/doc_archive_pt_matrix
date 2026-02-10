@@ -40,7 +40,7 @@
                     </button>
                 </div> --}}
                 <div>
-                    <span class="page-title">Library Management System - PT. Maxis</span>
+                    <span class="page-title">Library Management System - PT. MEXIS</span>
                 </div>
             </nav>
 

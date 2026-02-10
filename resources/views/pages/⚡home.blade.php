@@ -403,7 +403,7 @@ new #[Title('Home')] class extends Component {
 
     <footer class="bg-dark text-white py-4">
         <div class="container text-center">
-            <p class="mb-0">&copy; {{ date('Y') }} Document Archive. All rights reserved.</p>
+            <p class="mb-0">&copy; {{ date('Y') }} Library of PT MEXIS . All rights reserved.</p>
         </div>
     </footer>
 </div>
